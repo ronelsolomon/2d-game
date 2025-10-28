@@ -1,0 +1,117 @@
+# Game constants
+import os
+from pathlib import Path
+
+# Screen dimensions
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
+TILE_SIZE = 32
+VIEWPORT_WIDTH = SCREEN_WIDTH // TILE_SIZE
+VIEWPORT_HEIGHT = (SCREEN_HEIGHT - 100) // TILE_SIZE  # Leave space for HUD
+
+# Game settings
+FPS = 60
+TITLE = "2D Farming Game"
+GRAVITY = 0.5
+TERMINAL_VELOCITY = 10
+
+# Player settings
+PLAYER_SPEED = 3.0
+PLAYER_JUMP_STRENGTH = 10
+PLAYER_HEALTH = 100
+PLAYER_STAMINA = 100
+
+# Colors (RGB)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+GRAY = (128, 128, 128)
+DARK_GRAY = (64, 64, 64)
+LIGHT_GRAY = (200, 200, 200)
+BROWN = (139, 69, 19)
+LIGHT_BLUE = (135, 206, 250)
+
+# UI settings
+UI_FONT = 'Arial'
+UI_FONT_SIZE = 24
+UI_SMALL_FONT_SIZE = 16
+UI_TINY_FONT_SIZE = 12
+UI_PADDING = 10
+UI_BG_COLOR = (40, 40, 40, 200)
+UI_BORDER_COLOR = (100, 100, 100)
+UI_ACCENT_COLOR = (70, 130, 180)
+UI_TEXT_COLOR = (255, 255, 255)
+UI_TEXT_COLOR_DISABLED = (150, 150, 150)
+
+# Inventory settings
+INVENTORY_SLOTS = 24
+HOTBAR_SLOTS = 8
+SLOT_SIZE = 64
+SLOT_MARGIN = 5
+SLOT_BG_COLOR = (100, 100, 100, 200)
+SLOT_SELECTED_COLOR = (255, 255, 0, 150)
+SLOT_HOVER_COLOR = (150, 150, 150, 200)
+
+# Paths
+BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+ASSETS_DIR = BASE_DIR / 'assets'
+SPRITES_DIR = ASSETS_DIR / 'sprites'
+SOUNDS_DIR = ASSETS_DIR / 'sounds'
+MUSIC_DIR = ASSETS_DIR / 'music'
+FONTS_DIR = ASSETS_DIR / 'fonts'
+
+# Tile types (for reference, actual enum is in world/tile.py)
+TILE_EMPTY = 0
+TILE_GRASS = 1
+TILE_DIRT = 2
+TILE_STONE = 3
+TILE_WATER = 4
+TILE_SAND = 5
+TILE_LAVA = 6
+TILE_WOOD = 7
+TILE_LEAVES = 8
+TILE_FLOWER = 9
+TILE_MUSHROOM = 10
+TILE_CRYSTAL = 11
+TILE_TREASURE = 12
+TILE_DOOR = 13
+TILE_CHEST = 14
+TILE_SPAWN = 15
+
+# Item types (for reference, actual enum is in inventory/item.py)
+ITEM_TOOL = 1
+ITEM_SEED = 2
+ITEM_CROP = 3
+ITEM_RESOURCE = 4
+ITEM_CONSUMABLE = 5
+
+# Animation settings
+ANIMATION_SPEED = 0.1  # Time between frames in seconds
+
+# Game states
+STATE_MENU = 0
+STATE_PLAYING = 1
+STATE_PAUSED = 2
+STATE_GAME_OVER = 3
+STATE_DIALOGUE = 4
+STATE_INVENTORY = 5
+
+# Z-index layers
+LAYER_BACKGROUND = 0
+LAYER_GROUND = 1
+LAYER_ITEMS = 2
+LAYER_PLAYER = 3
+LAYER_FOREGROUND = 4
+LAYER_UI = 5
+LAYER_DEBUG = 10
+
+# Debug settings
+DEBUG = True
+SHOW_COLLIDERS = False
+SHOW_FPS = True
+SHOW_DEBUG_INFO = True
