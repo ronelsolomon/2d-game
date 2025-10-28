@@ -3,6 +3,7 @@ import pygame
 import random
 import math
 import sys
+from src.npc_types import NPC_TYPES
 from enum import Enum, auto, IntEnum
 import os
 from dataclasses import dataclass
@@ -115,6 +116,9 @@ class Tile(Enum):
     DESSERT_SKELETON = 75
     DESSERT_SIGN = 76
     DESSERT_SIGN_ARROW = 77
+    IRON_ORE = 78
+    GOLD_ORE = 79
+    DIAMOND_ORE = 80
 
 # Item Types
 class ItemType(IntEnum):
@@ -242,7 +246,11 @@ TILE_TO_ITEM = {
     Tile.FLOWER: ItemType.FLOWER,
     Tile.TREASURE: ItemType.TREASURE,
     Tile.CRYSTAL: ItemType.CRYSTAL,
-    Tile.KEY_ITEM: ItemType.KEY
+    Tile.KEY_ITEM: ItemType.KEY,
+    # Map some existing tiles to ore types for now
+    Tile.DARK_STONE: ItemType.IRON,  # Using DARK_STONE as iron ore
+    Tile.OBSIDIAN: ItemType.GOLD,    # Using OBSIDIAN as gold ore
+    Tile.CRYSTAL: ItemType.DIAMOND   # Using CRYSTAL as diamond ore
 }
 
 WALKABLE = [
@@ -448,14 +456,14 @@ class PlayerAnimations:
         
         # Load animations
         try:
-            # Try to load actual sprites
+            # Try to load actual sprites - using the correct filename patterns
             self.animations = {
-                'idle': self.load_and_clean_frames(os.path.join(base_path, 'Idle'), '*.png', 1.5) or self.create_player_idle_animation(),
-                'walk': self.load_and_clean_frames(os.path.join(base_path, 'Run'), '*.png', 1.5) or self.create_player_walk_animation(),
-                'run': self.load_and_clean_frames(os.path.join(base_path, 'Run'), '*.png', 1.5) or self.create_player_walk_animation(),
-                'jump': self.load_and_clean_frames(os.path.join(base_path, 'Jump'), '*.png', 1.5) or self.create_player_jump_animation(),
-                'attack': self.load_and_clean_frames(os.path.join(base_path, 'Attack1'), '*.png', 1.5) or self.create_player_attack_animation(),
-                'dead': self.load_and_clean_frames(os.path.join(base_path, 'Dead'), '*.png', 1.5) or self.create_player_dead_animation()
+                'idle': self.load_and_clean_frames(base_path, 'Idle__*.png', 1.5) or self.create_player_idle_animation(),
+                'walk': self.load_and_clean_frames(base_path, 'Run__*.png', 1.5) or self.create_player_walk_animation(),
+                'run': self.load_and_clean_frames(base_path, 'Run__*.png', 1.5) or self.create_player_walk_animation(),
+                'jump': self.load_and_clean_frames(base_path, 'Jump__*.png', 1.5) or self.create_player_jump_animation(),
+                'attack': self.load_and_clean_frames(base_path, 'Attack__*.png', 1.5) or self.create_player_attack_animation(),
+                'dead': self.load_and_clean_frames(base_path, 'Dead__*.png', 1.5) or self.create_player_dead_animation()
             }
             self.load_successful = all(self.animations.values())
         except Exception as e:
@@ -785,9 +793,11 @@ class PlayerAnimations:
         self.animation_frame = int(self.current_time / frame_duration) % len(self.current_animation)
     
     def get_current_frame(self):
-        if not self.current_animation:
+        if not self.current_animation or not self.current_animation:
             return create_error_surface("Player", 64)
-        return self.current_animation[self.animation_frame]
+        # Ensure animation_frame is an integer and within bounds
+        frame_idx = int(self.animation_frame) % len(self.current_animation)
+        return self.current_animation[frame_idx]
 
 
 # NPC Sprites
@@ -1391,8 +1401,9 @@ class TileSprites:
         surf.fill((238, 214, 175))
         # Cactus
         pygame.draw.rect(surf, (34, 139, 34), (TILE_SIZE//2-6, TILE_SIZE//2-10, 12, 25))
-        pygame.draw.rect(surf, (0, 100, 0), (TILE_SIZE//2-15, TILE_SIZE//2), 9, 8)
-        pygame.draw.rect(surf, (0, 100, 0), (TILE_SIZE//2+6, TILE_SIZE//2+3), 9, 8)
+        # Draw arms of the cactus
+        pygame.draw.rect(surf, (0, 100, 0), (TILE_SIZE//2-15, TILE_SIZE//2, 9, 8))
+        pygame.draw.rect(surf, (0, 100, 0), (TILE_SIZE//2+6, TILE_SIZE//2+3, 9, 8))
         return surf
     
     def create_lava_tile(self):
@@ -2231,6 +2242,7 @@ class Game:
         self.world_cache = {}
         self.npc_cache = {}
         self.game_time = 0
+        self.current_biome = self.get_biome(self.player_x, self.player_y)
         
         # Inventory system
         self.inventory = Inventory(capacity=24)  # 6x4 grid
@@ -3036,15 +3048,17 @@ class Game:
     def draw(self):
         # Clear the screen
         screen.fill((0, 0, 0))
-
-        # Draw the game world
-        for y in range(VIEWPORT_HEIGHT):
-            for x in range(VIEWPORT_WIDTH):
-                world_x = self.player_x - (VIEWPORT_WIDTH // 2) + x
-                world_y = self.player_y - (VIEWPORT_HEIGHT // 2) + y
         
+        # Define background color based on current biome
+        bg_color = BIOMES.get(self.current_biome, {}).get('bg_color', (0, 0, 0))
+        
+        # Create viewport surface
         viewport_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT - 80))
         viewport_surface.fill(bg_color)
+        
+        # Calculate viewport bounds
+        start_x = self.player_x - VIEWPORT_WIDTH // 2
+        start_y = self.player_y - VIEWPORT_HEIGHT // 2
 
         # Draw tiles
         for row in range(VIEWPORT_HEIGHT):
@@ -3082,7 +3096,8 @@ class Game:
             screen.blit(key_surf, (600, 10))
 
         # Biome indicator
-        biome_text = small_font.render(f"{BIOMES[current_biome]['icon']} {BIOMES[current_biome]['name']}", True, WHITE)
+        biome_info = BIOMES.get(self.current_biome, {'icon': '🌍', 'name': 'Unknown'})
+        biome_text = small_font.render(f"{biome_info.get('icon', '🌍')} {biome_info.get('name', 'Unknown')}", True, WHITE)
         screen.blit(biome_text, (20, 45))
         
         # Dimension indicator
