@@ -7,12 +7,23 @@ A 2D sandbox exploration game built with Python and Pygame. Explore procedurally
 ## Features
 
 - **Procedural World Generation**: Explore infinite, procedurally generated worlds with different biomes
-- **Resource Gathering**: Mine resources like wood, stone, and ores
+- **Resource Gathering**: Mine resources like wood, stone, and various ores including iron, gold, and diamonds
 - **Crafting System**: Craft tools, weapons, and items from gathered resources
 - **NPC Interactions**: Meet and interact with various NPCs throughout the world
-- **Inventory System**: Manage your collected items with a grid-based inventory
-- **Multiple Biomes**: Discover different environments including grasslands, deserts, and more
+- **Inventory System**: Manage your collected items with a grid-based inventory and hotbar
+- **Multiple Biomes**: Discover different environments including:
+  - **Plains**: Lush green landscapes with trees and grass
+  - **Desert**: Sandy terrain with cacti and unique resources
+  - **Snow**: Icy tundras with special winter-themed items
+  - **Forest**: Dense woodlands with abundant resources
+  - **Mountains**: Challenging terrain with valuable ores
 - **Day/Night Cycle**: Experience dynamic lighting and time-based events
+- **NPC System**: Interact with various NPCs including:
+  - **Merchant**: Buy and sell items
+  - **Farmer**: Trade for food and farming supplies
+  - **Wizard**: Unlock magical abilities and items
+  - **Blacksmith**: Upgrade your tools and weapons
+  - **Adventurer**: Get quests and valuable information
 
 ## Installation
 
@@ -37,6 +48,10 @@ A 2D sandbox exploration game built with Python and Pygame. Explore procedurally
    ```bash
    python app.py
    ```
+   Or use the modular version:
+   ```bash
+   python -m src.main
+   ```
 
 2. **Controls**:
    - **WASD or Arrow Keys**: Move character
@@ -48,25 +63,48 @@ A 2D sandbox exploration game built with Python and Pygame. Explore procedurally
    - **I**: Toggle inventory
    - **M**: Toggle map
    - **ESC**: Pause game/Close menus
+   - **F**: Toggle fullscreen
+   - **R**: Reload resources (debug)
+
+3. **Gameplay Tips**:
+   - Collect resources during the day when it's safer
+   - Different tools are more effective on different materials
+   - Talk to NPCs for quests and trading opportunities
+   - Keep an eye on your health and energy levels
+   - Some resources only appear in specific biomes
 
 ## Project Structure
 
 ```
 2d-game/
-├── assets/               # Game assets (sprites, sounds, etc.)
-│   └── sprites/          # Character and tile sprites
-├── src/                  # Source code
-├── app.py                # Main game file
-├── requirements.txt      # Python dependencies
-└── README.md             # This file
+├── assets/                 # Game assets
+│   ├── sprites/            # Character and tile sprites
+│   │   ├── characters/     # Player and NPC sprites
+│   │   └── tiles/          # Tile and environment sprites
+│   └── sounds/             # Sound effects and music
+├── src/                    # Source code
+│   ├── __init__.py         # Package initialization
+│   ├── main.py             # Main game loop
+│   ├── npc_types.py        # NPC type definitions
+│   ├── world/              # World generation
+│   └── entities/           # Game entities
+├── app.py                  # Monolithic game implementation
+├── requirements.txt         # Python dependencies
+└── README.md               # This file
 ```
 
 ## Dependencies
 
-- **Pygame**: For game development and rendering
-- **NumPy**: For numerical operations
-- **Pillow**: For image processing
-- **PyYAML**: For configuration management
+- **Python 3.8+**: Core programming language
+- **Pygame 2.0+**: Game development and rendering
+- **NumPy**: Efficient numerical operations
+- **Pillow**: Advanced image processing
+- **PyYAML**: Configuration management
+
+Install all dependencies with:
+```bash
+pip install -r requirements.txt
+```
 
 ## Contributing
 
